@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1016070371003",
+    "project_id": "onme-app-b3e7d",
+    "storage_bucket": "onme-app-b3e7d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016070371003:android:7ee160d29595b888a8db9e",
+        "android_client_info": {
+          "package_name": "com.example.on_me"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1016070371003-c1t9u5t9aapsed7qtatn8q2lfddshoie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfd4E5ogvDa36DyGPQUlEXP1VU_jCtmbs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1016070371003-c1t9u5t9aapsed7qtatn8q2lfddshoie.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1016070371003-nd6c4re68ve8l9pr5qk6inogei4lt5fj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.onMe"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
