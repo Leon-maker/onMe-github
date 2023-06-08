@@ -1,20 +1,98 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class TendanceScreen extends StatelessWidget {
-  const TendanceScreen ({super.key});
+class TendanceScreen extends StatefulWidget  {
+  TendanceScreen({Key? key}) : super(key: key);
+
+  @override
+  _TendanceScreenState createState() => _TendanceScreenState();
+}
+
+class _TendanceScreenState extends State<TendanceScreen> {
+  String randomName = "";
+  String randomUrl = "";
+
+  void recupererCollectionBrands() {
+      FirebaseFirestore.instance
+        .collection('brands')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+          List<DocumentSnapshot> documents = querySnapshot.docs;
+          if (documents.isNotEmpty) {
+            int randomIndex = Random().nextInt(documents.length);
+            DocumentSnapshot randomDoc = documents[randomIndex];
+            Map<String, dynamic>? data = randomDoc.data() as Map<String, dynamic>?;
+            if (data != null) {
+              setState(() {
+                randomName = data['name'];
+                randomUrl = data['logo_url'];
+              });
+
+              print('Élément aléatoire : $randomName');
+              // Récupérer la collection "clothes" associée au nom aléatoire
+              CollectionReference clothesCollection = randomDoc.reference.collection('clothes');
+              clothesCollection.get().then((QuerySnapshot clothesSnapshot) {
+                // Traiter les documents de la collection "clothes" ici
+                clothesSnapshot.docs.forEach((DocumentSnapshot clothesDoc) {
+                  var clothesData = clothesDoc.data();
+                  // Faire quelque chose avec les données des vêtements
+                  print(clothesData);
+                });
+                }).catchError((e) {
+                  print('Erreur lors de la récupération de la collection "clothes" : $e');
+                });
+            } else {
+              print('Le document sélectionné est vide.');
+            }
+          } else {
+            print('La collection "brands" est vide.');
+          }
+        })
+        .catchError((e) {
+          print('Erreur lors de la récupération de la collection "brands" : $e');
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("onMe"),
+        title: const Text('FlutterChat'),
+        actions: [
+          IconButton(onPressed: () {
+            FirebaseAuth.instance.signOut();
+          }, icon: Icon(
+            Icons.exit_to_app, 
+          color: Theme.of(context).colorScheme.primary,
+          ),
+          ),
+        ],
       ),
-      body: const Center(
-        child: Text('Logged in!'),
+      body: Center(
+        child: Column(
+          children: <Widget>[
+          Text('Logged in!'),
+          IconButton(onPressed: () {
+            recupererCollectionBrands();
+          }, icon: Icon(
+            Icons.access_time_filled, 
+          ),
+          ),
+          Text(randomName),
+          Image.network(
+            randomUrl,
+            width: 200, // spécifiez la largeur souhaitée de l'image
+            height: 200, // spécifiez la hauteur souhaitée de l'image
+            fit: BoxFit.contain, // spécifiez comment l'image doit être ajustée dans son conteneur
+          ),
+          ]),
       ),
     );
   }
-
 }
 
 
@@ -22,7 +100,7 @@ class TendanceScreen extends StatelessWidget {
 
 // void main() {
 //   List<List<String>> dataList = [
-//     ['https://www2.hm.com//fr_fr/productpage.1120814001.html', 'Chemise Regular Fit façon crochet avec col cubain', '39,99 €', 'https:////lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2F39%2F49%2F3949194c193543fb724f22ce694a5a8cc4587003.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D'],
+//     ['https://www2.hm.com//fr_fr/productpage.1120814001.html', 'Chemise Regular Fit façon crochet avec col cubain', '39,99 €', 'https://lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2F39%2F49%2F3949194c193543fb724f22ce694a5a8cc4587003.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D'],
 //     ['https://www2.hm.com//fr_fr/productpage.1152892001.html', 'Polo Regular Fit en maille fine', '39,99 €', 'https:////lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2F28%2Ff1%2F28f12f71666e26103a9e9aae3186ccd350ff69c1.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5B%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D'],
 //     ['https://www2.hm.com//fr_fr/productpage.1123347003.html', 'Pantalon Relaxed Fit en lin mélangé', '34,99 €', 'https:////lp2.hm.com/hmgoepprod?set=format%5Bwebp%5D%2Cquality%5B79%5D%2Csource%5B%2F54%2F8d%2F548d8e7547226cfd009b08827155d64f5fd58f36.jpg%5D%2Corigin%5Bdam%5D%2Ccategory%5Bmen_trousers_linentrousers%5D%2Ctype%5BDESCRIPTIVESTILLLIFE%5D%2Cres%5Bm%5D%2Chmver%5B2%5D&call=url%5Bfile%3A%2Fproduct%2Fmain%5D'],
 //   ];

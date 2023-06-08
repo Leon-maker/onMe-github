@@ -1,5 +1,7 @@
+import 'package:on_me/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
@@ -49,6 +51,13 @@ class _AuthScreenState extends State<AuthScreen> {
           email: _enteredEmail, 
           password: _enteredPassword
         );
+        final storageRef = FirebaseStorage .instance
+          .ref()
+          .child("user_images")
+          .child("${userCredentials.user!.uid}.jpg");
+
+        await storageRef.putFile(_selectedImage!);
+        final imageUrl = await storageRef.getDownloadURL();
 
         await FirebaseFirestore.instance
         .collection('users')
@@ -56,6 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
         .set({
           'username': _enteredUsername,
           'email': _enteredEmail,
+          'image_url': imageUrl,
         });
       } 
     }
@@ -95,19 +105,8 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: 200,
                 child: Image.asset('image/logo/2.png'),
               ),
-              Text("Bienvenue sur On me"),
-
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-/*
               Card(
+                color: Color(0xFFEFEBCB),
                 margin: const EdgeInsets.all(20),
                 child: SingleChildScrollView(
                   child: Padding(
@@ -117,6 +116,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (!_isLogin) UserImagePicker(
+                            onPickImage: ((pickedImage) {
+                              _selectedImage = pickedImage;
+                            }),
+                          ),
                           TextFormField(
                             decoration: const InputDecoration(
                                 labelText: "Email Address"),
@@ -171,9 +175,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             ElevatedButton(
                               onPressed: _submit, 
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                backgroundColor: const Color(0xFFFF8E8E),
                               ),
-                              child: Text(_isLogin ? "Login" : "Signup")
+                              child: Text(_isLogin ? "Login" : "Signup", style: TextStyle(color: Color(0xFFEFEBCB)),)
                             ),
                           if (!_isAutenticating)
                             TextButton(
@@ -182,7 +186,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _isLogin = !_isLogin;
                                 });
                               }, 
-                              child: Text(_isLogin ? "Create an account" : "I already have an account. Login.")
+                              child: Text(_isLogin ? "Create an account" : "I already have an account. Login.", style: TextStyle(color: const Color.fromARGB(255, 103, 101, 101),)),
                             ),
                         ],
                       ),
@@ -190,4 +194,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ),
- */
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
